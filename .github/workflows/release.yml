@@ -11,11 +11,19 @@
 ##   4. Bumps the version to the next -SNAPSHOT and pushes back to `main`
 ##
 ## Loop-avoidance note: step 4 pushes back to `main`, which would normally
-## re-trigger this workflow. That does not happen here because the release
-## plugin's own bump commit message ("[Gradle Release Plugin] - new version
-## commit: ...") is authored by the same PAT used below, and the workflow
-## simply runs again and finds nothing to release (version is already a
-## -SNAPSHOT). If you ever see back-to-back release loops, revisit this.
+## re-trigger this workflow. It does not, because the release plugin's git
+## pushes authenticate with the auto-provisioned `secrets.GITHUB_TOKEN`
+## that `actions/checkout` stores in the local git config (see the Checkout
+## step), and GitHub deliberately does NOT start new workflow runs from
+## pushes made with that token. The commit message plays no part in this.
+##
+## Corollary: if the Checkout step is ever switched back to a user PAT,
+## the bump push WILL re-trigger this workflow and each release will kick
+## off another one. Keep the Checkout step's `token:` as GITHUB_TOKEN.
+##
+## (Runs in the history titled "[Gradle Release Plugin] - new version
+## commit: ..." came from a human pushing those commits from a laptop, not
+## from CI.)
 
 name: Release
 
@@ -48,12 +56,19 @@ jobs:
     # -----------------------------------------------------------------------
     # Permissions for the auto-provisioned GITHUB_TOKEN
     # -----------------------------------------------------------------------
-    # `contents: write`  — needed so checkout can push commits/tags back to
-    #                      the repo (release plugin pushes to `main` and to
-    #                      the `release` branch).
-    # `packages: write`  — needed to upload the artifact to GitHub Packages.
-    # NOTE: These broaden the default GITHUB_TOKEN. The actual push in the
-    # "Run Release" step uses a separate PAT (see that step for why).
+    # `contents: write`  — REQUIRED. The release plugin's commits/tags are
+    #                      pushed with the GITHUB_TOKEN credentials that
+    #                      `actions/checkout` writes into the git config,
+    #                      so that token needs write access to `main` and
+    #                      the `release` branch.
+    # `packages: write`  — currently unused: the upload to GitHub Packages
+    #                      authenticates with RUBENS_PAT_TOKEN, not with
+    #                      GITHUB_TOKEN (see the "Run Release" step). Kept
+    #                      because it costs nothing and would be needed if
+    #                      publishing ever switched to GITHUB_TOKEN — which
+    #                      is not possible today, as the packages live in a
+    #                      DIFFERENT repo (rubensgomes/jvm-libs) that this
+    #                      workflow's GITHUB_TOKEN has no access to.
     permissions:
       contents: write
       packages: write
@@ -104,18 +119,25 @@ jobs:
       # 4. Run the release
       # ---------------------------------------------------------------------
       # Why RUBENS_PAT_TOKEN instead of the default secrets.GITHUB_TOKEN?
-      #   - Pushes made with the auto-provisioned GITHUB_TOKEN do NOT
-      #     trigger downstream workflows (a GitHub Actions safeguard).
-      #     That's often desirable, but here it also means branch-protection
-      #     checks and any consumer notifications tied to the release tag
-      #     may be skipped. A user-owned PAT bypasses this.
-      #   - The PAT also needs `write:packages` scope so the `publish` task
-      #     wired via `afterReleaseBuild` (see build.gradle.kts) can upload
-      #     to GitHub Packages.
+      # Because this build publishes to a DIFFERENT repository's package
+      # registry — rubensgomes/jvm-libs (see `jvmLibsRepoPackages` in
+      # gradle.properties). The auto-provisioned GITHUB_TOKEN is scoped to
+      # THIS repo only, so it cannot upload there. A user-owned PAT can.
       #
-      # The PAT is exported as `GITHUB_TOKEN` so both git (for pushes) and
-      # the Gradle publish task (`System.getenv("GITHUB_TOKEN")`) pick it up
-      # without any extra plumbing.
+      # Scope of this variable — narrower than the name suggests:
+      #   - It is read ONLY by the Gradle publish task, via
+      #     `System.getenv("GITHUB_TOKEN")` in build.gradle.kts, as the
+      #     GitHubPackages repository password.
+      #   - It is NOT what git pushes with. `actions/checkout` already
+      #     stored `secrets.GITHUB_TOKEN` as an auth header in the local
+      #     git config, and git uses that, ignoring this env var entirely.
+      #
+      # Requirements for the PAT: it must be a CLASSIC token (fine-grained
+      # tokens cannot authenticate to the Maven package registry) with the
+      # `write:packages` scope and access to rubensgomes/jvm-libs. When it
+      # is rotated, the repo secret must be updated too — a stale value
+      # surfaces as "Received status code 401" on the PUT, after the build
+      # has otherwise succeeded.
       #
       # `--info` gives verbose log output — useful for post-mortem when a
       # release fails. Switch to `--debug` if you need Gradle internals.
