@@ -19,6 +19,20 @@ configuration. The single deliverable is `gradle/libs.versions.toml`.
 - `.github/workflows/release.yml` — CI release workflow (push to `main` → release).
 - `.circleci/config.yml` — legacy, no longer used (see `.circleci/NOT_USED.md`).
 
+### Docs
+
+- `README.md` — user-facing: requirements, repo layout, catalog contents,
+  consumer setup, how to add/bump an entry, local build, releasing.
+- `PROJ_SETUP.md` — checklist for bootstrapping a *new* project like this
+  one (prereqs, `gradle init`, `gh repo create`, `release` branch, PAT
+  secret). Not needed for day-to-day work here.
+- `llms.txt` — machine-readable index of the docs and sources above.
+
+When the catalog's structure changes (a new bundle, a new plugin, a
+renamed alias), update the "What's in the Catalog" section of `README.md`
+in the same change. Routine version bumps do not need a README edit —
+README deliberately lists no version numbers.
+
 ## Conventions & guardrails
 
 - **Do not manually edit `version` in `gradle.properties`.** The
@@ -31,6 +45,14 @@ configuration. The single deliverable is `gradle/libs.versions.toml`.
   comment in `gradle.properties`).
 - **When bumping dependency or plugin versions, edit only
   `gradle/libs.versions.toml`.** Do not add new metadata elsewhere.
+- **Every `[libraries]`/`[plugins]` entry uses `version.ref`** — never an
+  inline literal version — so a version lives in exactly one place. Keep
+  each TOML table alphabetically sorted.
+- **A major-version bump can move the module coordinates.** When a
+  `version.ref` crosses a major boundary, verify the `module` group and
+  artifact id are still correct rather than bumping the number alone.
+- **Entries marked `# EOL`** (`oro`, `taglibs-*`) are dead upstream and
+  kept only for legacy consumers. Do not try to "fix" them.
 - **Publishing requires `GITHUB_USER` and `GITHUB_TOKEN` env vars** (PAT
   with `write:packages`). The release CI job supplies these from repo
   secrets; local runs need them set manually.

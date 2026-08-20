@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Rubens Gomes
+ * Copyright 2026 Rubens Gomes
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-// =============================================================================
+// =====================================================================
 // Gradle Version Catalog — build script
-// =============================================================================
+// =====================================================================
 // This project has NO application source code. Its only deliverable is the
 // version catalog defined in `gradle/libs.versions.toml`, which is packaged
 // and published as a Maven artifact (com.rubensgomes:gradle-catalog:<version>)
@@ -26,7 +26,7 @@
 //   ./gradlew clean build     # Build the catalog artifact locally
 //   ./gradlew clean publish   # Publish the artifact to GitHub Packages
 //   ./gradlew release         # Run the full release workflow (main branch)
-// =============================================================================
+// =====================================================================
 
 plugins {
     // Packages `gradle/libs.versions.toml` as a publishable Maven artifact
@@ -40,31 +40,27 @@ plugins {
     alias(libs.plugins.release)
 }
 
-// -----------------------------------------------------------------------------
+// ---------------------------------------------------------------------
 // Project coordinates & metadata
-// -----------------------------------------------------------------------------
+// ---------------------------------------------------------------------
 // All values below are declared in `gradle.properties` and injected here via
 // Kotlin's `by project` property delegate. Keeping them out of the build script
 // lets the release plugin rewrite `version` in `gradle.properties` without
 // touching this file.
+//
+// NOTE: `group`, `version`, and `description` are deliberately NOT read here.
+// Gradle applies any gradle.properties entry whose name matches a built-in
+// `Project` property straight onto the project, so `project.group`,
+// `project.version`, and `project.description` are already populated before
+// this script runs — reading and re-assigning them would be a no-op. Only
+// values with no `Project` equivalent need the delegate below.
 val developerId: String by project
 val developerName: String by project
-
-val group: String by project
-val artifact: String by project
-val version: String by project
 val title: String by project
-val description: String by project
 
-// Wire the property values into Gradle's built-in project coordinates so the
-// resulting artifact is published as `<group>:<artifact>:<version>`.
-project.group = group
-project.version = version
-project.description = description
-
-// -----------------------------------------------------------------------------
+// ---------------------------------------------------------------------
 // Gradle Version Catalog plugin
-// -----------------------------------------------------------------------------
+// ---------------------------------------------------------------------
 // Tells the `version-catalog` plugin where to find the catalog definition.
 // The TOML file becomes the payload of the published artifact — consumers
 // import it via `from("com.rubensgomes:gradle-catalog:<version>")` in their
@@ -76,9 +72,9 @@ catalog {
     }
 }
 
-// -----------------------------------------------------------------------------
+// ---------------------------------------------------------------------
 // Maven Publish plugin — publication + target repository
-// -----------------------------------------------------------------------------
+// ---------------------------------------------------------------------
 // Defines WHAT gets published (the `maven` publication) and WHERE it goes
 // (the `GitHubPackages` repository).
 // https://docs.gradle.org/current/userguide/publishing_maven.html
@@ -101,7 +97,8 @@ publishing {
         // content is the TOML file — that's what actually ships.
         create<MavenPublication>("maven") {
             groupId = project.group.toString()
-            artifactId = artifact
+            // Single source of truth: `rootProject.name` (settings.gradle.kts).
+            artifactId = rootProject.name
             version = project.version.toString()
 
             // Pull the catalog contents (libs.versions.toml) into this publication.
@@ -150,7 +147,6 @@ publishing {
         // upload time, not at configuration time.
         maven {
             name = "GitHubPackages"
-            project.version = version
             url = uri(jvmLibsRepoPackages)
             credentials {
                 username = System.getenv("GITHUB_USER")
@@ -160,9 +156,9 @@ publishing {
     }
 }
 
-// -----------------------------------------------------------------------------
+// ---------------------------------------------------------------------
 // Release plugin (net.researchgate.release)
-// -----------------------------------------------------------------------------
+// ---------------------------------------------------------------------
 // Automates the SNAPSHOT → release → next-SNAPSHOT lifecycle. Running
 // `./gradlew release` performs, in order:
 //   1. Strip "-SNAPSHOT" from `gradle.properties` version.
