@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-// The project name shown by Gradle on the command line. Should match the
-// root folder and the `artifact` value in gradle.properties.
+// The project name shown by Gradle on the command line. This is ALSO the
+// published Maven artifactId — build.gradle.kts reads `rootProject.name`
+// when building the publication, so it is the single source of truth.
+// Keep it matching the root folder name.
 rootProject.name = "gradle-catalog"
 
 // Repositories used to resolve Gradle plugins declared in `build.gradle.kts`.

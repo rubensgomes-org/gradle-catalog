@@ -9,11 +9,14 @@ deliverable is `gradle/libs.versions.toml`.
 
 ## Docs
 
-- [README.md](README.md): User-facing setup, consumer configuration
-  (including required GitHub Packages auth), local development, and
-  release commands.
+- [README.md](README.md): User-facing setup, repository layout, catalog
+  contents (bundles/plugins/libraries), consumer configuration (including
+  required GitHub Packages auth), how to add or bump a catalog entry,
+  local development, and release commands.
 - [CLAUDE.md](CLAUDE.md): Agent-facing conventions and guardrails for
   working in this repo.
+- [PROJ_SETUP.md](PROJ_SETUP.md): Checklist for bootstrapping a new
+  Java/Kotlin Gradle project on GitHub with this publishing/release setup.
 
 ## Source
 
