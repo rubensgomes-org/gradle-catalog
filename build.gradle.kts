@@ -137,8 +137,9 @@ publishing {
     }
 
     repositories {
-        // Target repository URL comes from `gradle.properties` (jvmLibsRepoPackages).
-        val jvmLibsRepoPackages: String by project
+        // Target repository URL comes from `gradle.properties`
+        // (mavenRepoPackages).
+        val mavenRepoPackages: String by project
 
         // GitHub Packages Maven registry. Credentials MUST be provided via
         // environment variables — the release workflow and local publishes
@@ -147,7 +148,7 @@ publishing {
         // upload time, not at configuration time.
         maven {
             name = "GitHubPackages"
-            url = uri(jvmLibsRepoPackages)
+            url = uri(mavenRepoPackages)
             credentials {
                 username = System.getenv("GITHUB_USER")
                 password = System.getenv("GITHUB_TOKEN")
