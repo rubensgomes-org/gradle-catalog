@@ -7,7 +7,7 @@ Virtual Machine) Gradle software development projects.
 
 The catalog is published as a Maven artifact
 (`com.rubensgomes:gradle-catalog`) to
-[GitHub Packages](https://github.com/rubensgomes/jvm-libs/packages) for
+[GitHub Packages](https://github.com/rubensgomes-org/mvn-pkgs/packages) for
 consumption by Gradle build projects.
 
 ## Requirements
@@ -46,9 +46,10 @@ CI/CD is defined in [`.github/workflows/release.yml`](.github/workflows/release.
 Every push to `main` triggers the release workflow, which runs
 `./gradlew release` and publishes the resulting artifact to GitHub Packages:
 
-- Browse published packages: https://github.com/rubensgomes/jvm-libs/packages
+- Browse published packages:
+  https://github.com/rubensgomes-org/mvn-pkgs/packages
 - Maven repository endpoint (for build scripts, not browsers):
-  `https://maven.pkg.github.com/rubensgomes/jvm-libs`
+  `https://maven.pkg.github.com/rubensgomes-org/mvn-pkgs`
 
 ## What's in the Catalog
 
@@ -115,7 +116,7 @@ dependencies.
 
 Browse the published versions on the GitHub Packages page:
 
-- https://github.com/rubensgomes/jvm-libs/packages/2811984
+- https://github.com/rubensgomes-org/mvn-pkgs/packages/2811984
 
 Or check the latest git tag on the [`release`](https://github.com/rubensgomes/gradle-catalog/tree/release)
 branch.
@@ -138,7 +139,7 @@ dependencyResolutionManagement {
         mavenCentral()
 
         maven {
-            url = uri("https://maven.pkg.github.com/rubensgomes/jvm-libs")
+            url = uri("https://maven.pkg.github.com/rubensgomes-org/mvn-pkgs")
             credentials {
                 username = System.getenv("GITHUB_USER")
                 password = System.getenv("GITHUB_TOKEN")
