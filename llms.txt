@@ -31,7 +31,7 @@ deliverable is `gradle/libs.versions.toml`.
 
 ## Optional
 
-- [Published packages](https://github.com/rubensgomes/jvm-libs/packages/2811984):
+- [Published packages](https://github.com/rubensgomes-org/mvn-pkgs/packages/2811984):
   Browse released versions of this catalog.
 - [Gradle version catalogs userguide](https://docs.gradle.org/current/userguide/platforms.html):
   Upstream Gradle documentation on version catalogs.

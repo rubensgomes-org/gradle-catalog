@@ -108,7 +108,7 @@ and no non-SNAPSHOT version. Update the secret and re-run.
 
 Why a PAT rather than the automatic `secrets.GITHUB_TOKEN`: the artifacts
 are published to a **different** repository's registry
-(`rubensgomes/jvm-libs`, see `jvmLibsRepoPackages` in `gradle.properties`),
+(`rubensgomes-org/mvn-pkgs`, see `jvmLibsRepoPackages` in `gradle.properties`),
 and the auto-provisioned token is scoped only to the repo running the
 workflow. The PAT therefore also needs access to that packages repo — not
 just to this one.
