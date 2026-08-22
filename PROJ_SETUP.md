@@ -54,8 +54,8 @@ and (optionally) remove system Gradle.
 git init -b main
 git add .
 git commit -m "initial commit"
-gh repo create --homepage "https://github.com/rubensgomes" --public "$PROJ_NAME"
-git remote add origin "https://github.com/rubensgomes/$PROJ_NAME"
+gh repo create "rubensgomes-org/$PROJ_NAME" --homepage "https://github.com/rubensgomes-org" --public
+git remote add origin "https://github.com/rubensgomes-org/$PROJ_NAME"
 git push -u origin main
 ```
 
@@ -80,7 +80,7 @@ secret read by `.github/workflows/release.yml`:
 
 ```shell
 # Prompts for the value — keeps the token out of shell history.
-gh secret set RUBENS_PAT_TOKEN --repo "rubensgomes/$PROJ_NAME"
+gh secret set RUBENS_PAT_TOKEN --repo "rubensgomes-org/$PROJ_NAME"
 ```
 
 **The two are separate copies of the same token.** Creating (or later
@@ -116,7 +116,7 @@ just to this one.
 To check when a repo's secret was last set (values are never displayed):
 
 ```shell
-gh secret list --repo "rubensgomes/$PROJ_NAME"
+gh secret list --repo "rubensgomes-org/$PROJ_NAME"
 ```
 
 ---
