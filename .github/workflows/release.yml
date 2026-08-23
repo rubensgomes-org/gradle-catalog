@@ -67,7 +67,7 @@ jobs:
     #                      because it costs nothing and would be needed if
     #                      publishing ever switched to GITHUB_TOKEN — which
     #                      is not possible today, as the packages live in a
-    #                      DIFFERENT repo (rubensgomes/jvm-libs) that this
+    #                      DIFFERENT repo (rubensgomes-org/mvn-pkgs) that this
     #                      workflow's GITHUB_TOKEN has no access to.
     permissions:
       contents: write
@@ -120,7 +120,7 @@ jobs:
       # ---------------------------------------------------------------------
       # Why RUBENS_PAT_TOKEN instead of the default secrets.GITHUB_TOKEN?
       # Because this build publishes to a DIFFERENT repository's package
-      # registry — rubensgomes/jvm-libs (see `jvmLibsRepoPackages` in
+      # registry — rubensgomes-org/mvn-pkgs (see `mavenRepoPackages` in
       # gradle.properties). The auto-provisioned GITHUB_TOKEN is scoped to
       # THIS repo only, so it cannot upload there. A user-owned PAT can.
       #
@@ -134,7 +134,7 @@ jobs:
       #
       # Requirements for the PAT: it must be a CLASSIC token (fine-grained
       # tokens cannot authenticate to the Maven package registry) with the
-      # `write:packages` scope and access to rubensgomes/jvm-libs. When it
+      # `write:packages` scope and access to rubensgomes-org/mvn-pkgs. When it
       # is rotated, the repo secret must be updated too — a stale value
       # surfaces as "Received status code 401" on the PUT, after the build
       # has otherwise succeeded.

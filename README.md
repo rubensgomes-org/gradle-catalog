@@ -13,7 +13,7 @@ consumption by Gradle build projects.
 ## Requirements
 
 - **JDK 25** (Temurin, matches CI)
-- **Gradle 9.6.1** (via the included wrapper — no local install needed)
+- **Gradle 9.7.1** (via the included wrapper — no local install needed)
 
 ## Repository Layout
 
@@ -72,9 +72,9 @@ Bundles group libraries that are almost always applied together.
 
 ### Plugins
 
-`foojay`, `jsonschema2pojo`, `kotlin-jvm`, `kotlin-spring`, `lombok`,
-`release`, `sonarqube`, `spotless`, `spring-boot`,
-`spring-dependency-management`, `task-tree`.
+`docker-remote-api`, `foojay`, `jsonschema2pojo`, `kotlin-jvm`,
+`kotlin-spring`, `lombok`, `release`, `sonarqube`, `spotless`,
+`spring-boot`, `spring-dependency-management`, `task-tree`.
 
 Apply them with `alias(libs.plugins.<name>)` — see the example below.
 
@@ -124,7 +124,7 @@ Browse the published versions on the GitHub Packages page:
 - https://github.com/rubensgomes-org/mvn-pkgs/packages/2811984
 
 Or check the latest git tag on the [
-`release`](https://github.com/rubensgomes/gradle-catalog/tree/release)
+`release`](https://github.com/rubensgomes-org/gradle-catalog/tree/release)
 branch.
 
 ### 2. Import the catalog in `settings.gradle.kts`
@@ -296,9 +296,10 @@ automatically (see [CI/CD](#cicd)).
 
 ```bash
 ./gradlew -q javaToolchains                                     # List installed JDKs
-./gradlew wrapper --gradle-version=9.6.1 --distribution-type=bin # Update wrapper
+./gradlew wrapper --gradle-version=9.7.1 --distribution-type=bin # Update wrapper
 ./gradlew clean                                                 # Clean build outputs
 ./gradlew clean build                                           # Full local build
+./gradlew clean build --warning-mode all                        # Full build + deprecation report
 ./gradlew clean publish                                         # Publish to GitHub Packages
 ```
 

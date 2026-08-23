@@ -43,20 +43,25 @@ plugins {
 // ---------------------------------------------------------------------
 // Project coordinates & metadata
 // ---------------------------------------------------------------------
-// All values below are declared in `gradle.properties` and injected here via
-// Kotlin's `by project` property delegate. Keeping them out of the build script
-// lets the release plugin rewrite `version` in `gradle.properties` without
-// touching this file.
+// All values below are declared in `gradle.properties` and read here via
+// `providers.gradleProperty(...)`. Keeping them out of the build script lets
+// the release plugin rewrite `version` in `gradle.properties` without touching
+// this file.
+//
+// NOTE: the `val name: String by project` delegate syntax was deprecated in
+// Gradle 9 and is removed in Gradle 10, so the Provider API is used instead.
+// `.get()` resolves the value eagerly at configuration time and fails with a
+// clear error if the property is missing from `gradle.properties`.
 //
 // NOTE: `group`, `version`, and `description` are deliberately NOT read here.
 // Gradle applies any gradle.properties entry whose name matches a built-in
 // `Project` property straight onto the project, so `project.group`,
 // `project.version`, and `project.description` are already populated before
 // this script runs — reading and re-assigning them would be a no-op. Only
-// values with no `Project` equivalent need the delegate below.
-val developerId: String by project
-val developerName: String by project
-val title: String by project
+// values with no `Project` equivalent need to be read below.
+val developerId = providers.gradleProperty("developerId").get()
+val developerName = providers.gradleProperty("developerName").get()
+val title = providers.gradleProperty("title").get()
 
 // ---------------------------------------------------------------------
 // Gradle Version Catalog plugin
@@ -84,13 +89,13 @@ publishing {
         // Additional POM metadata pulled from `gradle.properties`. Declared
         // inside `publications` (rather than at the top of the file) because
         // these values are only needed while building the POM.
-        val developerEmail: String by project
+        val developerEmail = providers.gradleProperty("developerEmail").get()
 
-        val scmConnection: String by project
-        val scmUrl: String by project
+        val scmConnection = providers.gradleProperty("scmConnection").get()
+        val scmUrl = providers.gradleProperty("scmUrl").get()
 
-        val license: String by project
-        val licenseUrl: String by project
+        val license = providers.gradleProperty("license").get()
+        val licenseUrl = providers.gradleProperty("licenseUrl").get()
 
         // A single Maven publication named "maven". The `version-catalog`
         // plugin contributes a `versionCatalog` software component whose
@@ -139,7 +144,7 @@ publishing {
     repositories {
         // Target repository URL comes from `gradle.properties`
         // (mavenRepoPackages).
-        val mavenRepoPackages: String by project
+        val mavenRepoPackages = providers.gradleProperty("mavenRepoPackages").get()
 
         // GitHub Packages Maven registry. Credentials MUST be provided via
         // environment variables — the release workflow and local publishes

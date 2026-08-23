@@ -45,6 +45,15 @@ README deliberately lists no version numbers.
   comment in `gradle.properties`).
 - **When bumping dependency or plugin versions, edit only
   `gradle/libs.versions.toml`.** Do not add new metadata elsewhere.
+- **Read `gradle.properties` values with
+  `providers.gradleProperty("<name>").get()`** in `build.gradle.kts`. The
+  `val <name>: String by project` delegate syntax is deprecated and is
+  removed in Gradle 10; every property read in this build was converted
+  away from it. Do not reintroduce it.
+- **The build must stay deprecation-free.** Check with
+  `./gradlew clean build --warning-mode all` after touching
+  `build.gradle.kts` or `settings.gradle.kts` — "Deprecated Gradle features
+  were used in this build" is a regression, not noise.
 - **Every `[libraries]`/`[plugins]` entry uses `version.ref`** — never an
   inline literal version — so a version lives in exactly one place. Keep
   each TOML table alphabetically sorted.
