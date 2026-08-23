@@ -30,6 +30,7 @@ TOML catalog; everything else exists to package and publish it.
 | [`CLAUDE.md`](CLAUDE.md)                                         | Agent-facing conventions and guardrails.                                                               |
 | [`PROJ_SETUP.md`](PROJ_SETUP.md)                                 | Checklist for bootstrapping a new GitHub/Gradle project like this one.                                 |
 | [`llms.txt`](llms.txt)                                           | Machine-readable index of this repo's docs and sources.                                                |
+| [`LICENSE`](LICENSE)                                             | AI-generated-content notice + Apache License 2.0 (the license declared in the published POM).          |
 | `.circleci/`                                                     | Legacy, no longer used (see `.circleci/NOT_USED.md`).                                                  |
 
 ## Branching Strategy
@@ -333,6 +334,17 @@ To run the release manually from a machine with `GITHUB_USER` and
 [`PROJ_SETUP.md`](PROJ_SETUP.md) is the checklist for bootstrapping a new
 Java/Kotlin Gradle project on GitHub with the same publishing and release setup
 used here.
+
+## License
+
+Licensed under the [Apache License, Version 2.0](LICENSE) — the same license
+declared in the generated POM's `<licenses>` block.
+
+[`LICENSE`](LICENSE) opens with an **AI-generated content notice** before the
+Apache text: this project's code and documentation were produced predominantly
+by an AI LLM, reviewed and refined by the project lead. Output may contain
+inaccuracies or errors, and the AI-generated portions are treated as public
+domain, with copyright limited to the human contributions.
 
 ---
 Author: [Rubens Gomes](https://rubensgomes.com/)
