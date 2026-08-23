@@ -92,16 +92,11 @@ jobs:
       # JDK 25 (Temurin) — must match the toolchain used locally so the
       # release build/publish behaves identically to `./gradlew release`
       # run from a developer machine.
-      #
-      # `github-token` is passed to actions/setup-java so its calls to the
-      # GitHub-hosted JDK metadata endpoint are authenticated and don't hit
-      # the anonymous rate limit on busy runners.
       - name: Set up JDK 25
         uses: actions/setup-java@v5
         with:
           java-version: '25'
           distribution: 'temurin'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       # ---------------------------------------------------------------------
       # 3. Configure git identity
