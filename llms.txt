@@ -17,6 +17,8 @@ deliverable is `gradle/libs.versions.toml`.
   working in this repo.
 - [PROJ_SETUP.md](PROJ_SETUP.md): Checklist for bootstrapping a new
   Java/Kotlin Gradle project on GitHub with this publishing/release setup.
+- [LICENSE](LICENSE): AI-generated-content notice followed by the Apache
+  License 2.0 text — the license declared in the published POM.
 
 ## Source
 
