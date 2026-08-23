@@ -81,7 +81,7 @@ jobs:
       # run against a shallow clone because it needs to inspect tags and
       # rewrite/push commits.
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0  # Full history needed for release plugin
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -97,7 +97,7 @@ jobs:
       # GitHub-hosted JDK metadata endpoint are authenticated and don't hit
       # the anonymous rate limit on busy runners.
       - name: Set up JDK 25
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: '25'
           distribution: 'temurin'
