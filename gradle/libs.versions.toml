@@ -4,6 +4,7 @@ commons-configuration2 = "2.15.1"
 commons-validator = "1.11.0"
 device-detector = "1.0.10"
 displaytag = "3.8.0"
+docker-remote-api = "10.0.0"
 expressly = "6.0.0"
 foojay = "1.0.0"
 hibernate-validator = "9.1.3.Final"
@@ -87,6 +88,7 @@ kotlin-junit5 = ["mockk", "kotlin-test-junit5", "junit-jupiter-engine"]
 logback = ["logback-classic", "logback-core"]
 
 [plugins]
+docker-remote-api = { id = "com.bmuschko.docker-remote-api", version.ref = "docker-remote-api" }
 foojay = { id = "org.gradle.toolchains.foojay-resolver-convention", version.ref = "foojay" }
 jsonschema2pojo = { id = "org.jsonschema2pojo", version.ref = "jsonschema2pojo" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
