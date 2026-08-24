@@ -26,6 +26,10 @@ configuration. The single deliverable is `gradle/libs.versions.toml`.
 - `PROJ_SETUP.md` — checklist for bootstrapping a *new* project like this
   one (prereqs, `gradle init`, `gh repo create`, `release` branch, PAT
   secret). Not needed for day-to-day work here.
+- `LICENSE` — AI-generated-content notice + MIT License text. Authoritative
+  source for every license statement in the repo.
+- `DISCLAIMER.md` — reader-friendly copy of the LICENSE notices. Keep it in
+  sync with `LICENSE`; `LICENSE` governs where they differ.
 - `llms.txt` — machine-readable index of the docs and sources above.
 
 When the catalog's structure changes (a new bundle, a new plugin, a
@@ -73,6 +77,12 @@ README deliberately lists no version numbers.
   A secret can never be named `GITHUB_TOKEN`: GitHub reserves the `GITHUB_`
   prefix, so the PAT travels as `RUBENS_PAT_TOKEN` and is renamed to the
   `GITHUB_TOKEN` env var inside the release step.
+- **The project is MIT-licensed.** `LICENSE` is authoritative; the license
+  name/URL shipped in the POM lives in `gradle.properties`
+  (`license`/`licenseUrl`). `build.gradle.kts` and `settings.gradle.kts`
+  carry an `SPDX-License-Identifier: MIT` header instead of a full license
+  block. A license change must be applied to all of these plus
+  `DISCLAIMER.md`, `README.md`, and `llms.txt` in the same commit.
 - **`sonarqube` in `gradle/libs.versions.toml` is a catalog entry for
   consumers only.** Do not apply the plugin to this build: the repo has no
   sources, tests, or coverage for it to analyze.
