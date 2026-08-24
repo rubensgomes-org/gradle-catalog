@@ -72,29 +72,39 @@ git push -u origin release
 git checkout main
 ```
 
-### Add the PAT to this repo's Actions secrets
+### Actions secrets — nothing to do per repo
 
-If the project's CI publishes to GitHub Packages, the PAT created in step 1
-must **also be added to this repository**, as the `RUBENS_PAT_TOKEN` Actions
-secret read by `.github/workflows/release.yml`:
+The Actions secrets this CI needs are configured **once, at the
+`rubensgomes-org` organization level**, and shared with all public repos in
+the org. A newly created public repo inherits them automatically; there is
+no `gh secret set` step to run.
+
+The one this project's CI uses is `RUBENS_PAT_TOKEN`, read by
+`.github/workflows/release.yml` to publish to GitHub Packages.
+
+Confirm what a given repo can see:
 
 ```shell
-# Prompts for the value — keeps the token out of shell history.
-gh secret set RUBENS_PAT_TOKEN --repo "rubensgomes-org/$PROJ_NAME"
+gh api "repos/rubensgomes-org/$PROJ_NAME/actions/organization-secrets" \
+  --jq '.secrets[] | "\(.name)  updated=\(.updated_at)"'
 ```
 
-**The two are separate copies of the same token.** Creating (or later
-rotating) the PAT under
-*GitHub profile → Settings → Developer settings → Personal access tokens*
-does nothing to the value stored in this repo, and the repo secret cannot
-read your profile. Every project that publishes packages needs its own
-copy configured under
-*repo → Settings → Secrets and variables → Actions*.
+If that comes back empty for a repo you expect to be covered, the repo is
+probably private — the org secrets are shared with *public* repos, so a
+private repo has to be added to the secret's repository access list
+explicitly.
 
-**So: every time the PAT is regenerated, re-run the command above for each
-project that uses it.** Otherwise the workflow keeps sending the old,
-now-revoked token. The symptom is a release that builds fine and then
-fails at the very end:
+**Rotating the PAT is now a single update**, under
+*org → Settings → Secrets and variables → Actions → `RUBENS_PAT_TOKEN`*
+(or `gh secret set RUBENS_PAT_TOKEN --org rubensgomes-org --visibility all`).
+Every project picks up the new value on its next run. Note that this is
+still a *copy* of the token: regenerating the PAT under *GitHub profile →
+Settings → Developer settings → Personal access tokens* does not update the
+org secret, so the two can still drift out of sync — there is just one
+place to fix now instead of one per repo.
+
+A stale value surfaces as a release that builds fine and then fails at the
+very end:
 
 ```
 > Failed to publish publication 'maven' to repository 'GitHubPackages'
@@ -104,20 +114,17 @@ fails at the very end:
 
 Nothing needs cleaning up after that failure — the release plugin runs
 `publish` *before* it commits or tags, so a 401 there leaves no stray tag
-and no non-SNAPSHOT version. Update the secret and re-run.
+and no non-SNAPSHOT version. Update the org secret and re-run.
 
 Why a PAT rather than the automatic `secrets.GITHUB_TOKEN`: the artifacts
 are published to a **different** repository's registry
 (`rubensgomes-org/mvn-pkgs`, see `mavenRepoPackages` in `gradle.properties`),
 and the auto-provisioned token is scoped only to the repo running the
 workflow. The PAT therefore also needs access to that packages repo — not
-just to this one.
-
-To check when a repo's secret was last set (values are never displayed):
-
-```shell
-gh secret list --repo "rubensgomes-org/$PROJ_NAME"
-```
+just to this one. Note also that a secret cannot be *named* `GITHUB_TOKEN`:
+GitHub reserves the `GITHUB_` prefix and rejects the name, which is why the
+PAT is carried under `RUBENS_PAT_TOKEN` and only mapped onto the
+`GITHUB_TOKEN` *environment variable* inside the release step.
 
 ---
 Author: [Rubens Gomes](https://rubensgomes.com/)

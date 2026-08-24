@@ -24,6 +24,17 @@
 ## (Runs in the history titled "[Gradle Release Plugin] - new version
 ## commit: ..." came from a human pushing those commits from a laptop, not
 ## from CI.)
+##
+## Secrets: this workflow defines NO repository secrets of its own. Every
+## secret it references is either auto-provisioned by GitHub or inherited
+## from the rubensgomes-org ORGANIZATION, shared with all public repos:
+##
+##   secrets.GITHUB_TOKEN      auto-provisioned per run; used by Checkout
+##                             for git auth (see loop-avoidance note above).
+##                             Cannot be overridden — GitHub reserves the
+##                             `GITHUB_` secret-name prefix.
+##   secrets.RUBENS_PAT_TOKEN  org secret; the classic PAT used to publish
+##                             to rubensgomes-org/mvn-pkgs (see step 4).
 
 name: Release
 
@@ -127,12 +138,29 @@ jobs:
       #     stored `secrets.GITHUB_TOKEN` as an auth header in the local
       #     git config, and git uses that, ignoring this env var entirely.
       #
+      # Where RUBENS_PAT_TOKEN lives: it is an ORGANIZATION-level Actions
+      # secret on rubensgomes-org, shared with every public repo in the org
+      # — not a secret of this repository. There is nothing to configure
+      # here; `secrets.RUBENS_PAT_TOKEN` resolves through the org. Verify
+      # what this repo can see with:
+      #   gh api repos/rubensgomes-org/gradle-catalog/actions/organization-secrets
+      #
+      # Why the name is not simply GITHUB_TOKEN: GitHub reserves the
+      # `GITHUB_` prefix and REJECTS any secret created with it, because
+      # `secrets.GITHUB_TOKEN` is permanently bound to the auto-provisioned
+      # per-run token. So the PAT is carried under RUBENS_PAT_TOKEN and
+      # mapped onto the GITHUB_TOKEN *environment variable* right here —
+      # which is the name build.gradle.kts reads. The two GITHUB_TOKENs in
+      # this file are therefore different values: `secrets.GITHUB_TOKEN` in
+      # the Checkout step is the auto-provisioned token, `env.GITHUB_TOKEN`
+      # below is the PAT.
+      #
       # Requirements for the PAT: it must be a CLASSIC token (fine-grained
       # tokens cannot authenticate to the Maven package registry) with the
-      # `write:packages` scope and access to rubensgomes-org/mvn-pkgs. When it
-      # is rotated, the repo secret must be updated too — a stale value
-      # surfaces as "Received status code 401" on the PUT, after the build
-      # has otherwise succeeded.
+      # `write:packages` scope and access to rubensgomes-org/mvn-pkgs. Rotate
+      # it in ONE place — the org secret — and every repo picks it up; a
+      # stale value surfaces as "Received status code 401" on the PUT, after
+      # the build has otherwise succeeded.
       #
       # `--info` gives verbose log output — useful for post-mortem when a
       # release fails. Switch to `--debug` if you need Gradle internals.
