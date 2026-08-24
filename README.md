@@ -318,6 +318,15 @@ git commit -am "updated gradle-catalog"
 git push
 ```
 
+The CI job needs no per-repo secret configuration: `GITHUB_USER` is set
+inline in [`release.yml`](.github/workflows/release.yml), and the publishing
+credential comes from `RUBENS_PAT_TOKEN`, an **organization-level** Actions
+secret on `rubensgomes-org` shared with all public repos. Rotating that
+secret once updates every project that publishes packages. (The name cannot
+be `GITHUB_TOKEN` — GitHub reserves that for the token it provisions per
+run — so the workflow maps the PAT onto the `GITHUB_TOKEN` environment
+variable in the release step.)
+
 To run the release manually from a machine with `GITHUB_USER` and
 `GITHUB_TOKEN` (PAT with `write:packages`) set:
 

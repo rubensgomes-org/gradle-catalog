@@ -63,8 +63,19 @@ README deliberately lists no version numbers.
 - **Entries marked `# EOL`** (`oro`, `taglibs-*`) are dead upstream and
   kept only for legacy consumers. Do not try to "fix" them.
 - **Publishing requires `GITHUB_USER` and `GITHUB_TOKEN` env vars** (PAT
-  with `write:packages`). The release CI job supplies these from repo
-  secrets; local runs need them set manually.
+  with `write:packages`). Local runs need them set manually. In CI,
+  `GITHUB_USER` is a plain `env:` value in the workflow and `GITHUB_TOKEN`
+  is mapped from `secrets.RUBENS_PAT_TOKEN`.
+- **All Actions secrets are ORGANIZATION-level** (`rubensgomes-org`, shared
+  with public repos) — this repo defines none of its own. Do not add a repo
+  secret or a `gh secret set --repo` step; check what is visible with
+  `gh api repos/rubensgomes-org/gradle-catalog/actions/organization-secrets`.
+  A secret can never be named `GITHUB_TOKEN`: GitHub reserves the `GITHUB_`
+  prefix, so the PAT travels as `RUBENS_PAT_TOKEN` and is renamed to the
+  `GITHUB_TOKEN` env var inside the release step.
+- **`sonarqube` in `gradle/libs.versions.toml` is a catalog entry for
+  consumers only.** Do not apply the plugin to this build: the repo has no
+  sources, tests, or coverage for it to analyze.
 
 ## Common commands
 
