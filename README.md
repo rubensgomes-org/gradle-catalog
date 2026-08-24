@@ -10,6 +10,12 @@ to
 [GitHub Packages](https://github.com/rubensgomes-org/mvn-pkgs/packages) for
 consumption by Gradle build projects.
 
+## AI-Assisted Development
+
+This project was developed primarily using AI-assisted code generation. All
+generated content was reviewed, tested, and refined by human contributors. See
+the LICENSE file for additional information regarding AI-generated content.
+
 ## Requirements
 
 - **JDK 25** (Temurin, matches CI)
@@ -30,7 +36,8 @@ TOML catalog; everything else exists to package and publish it.
 | [`CLAUDE.md`](CLAUDE.md)                                         | Agent-facing conventions and guardrails.                                                               |
 | [`PROJ_SETUP.md`](PROJ_SETUP.md)                                 | Checklist for bootstrapping a new GitHub/Gradle project like this one.                                 |
 | [`llms.txt`](llms.txt)                                           | Machine-readable index of this repo's docs and sources.                                                |
-| [`LICENSE`](LICENSE)                                             | AI-generated-content notice + Apache License 2.0 (the license declared in the published POM).          |
+| [`LICENSE`](LICENSE)                                             | AI-generated-content notice + MIT License (the license declared in the published POM).                 |
+| [`DISCLAIMER.md`](DISCLAIMER.md)                                 | Reader-friendly copy of the LICENSE notices (AI content, third-party, liability, warranty).            |
 | `.circleci/`                                                     | Legacy, no longer used (see `.circleci/NOT_USED.md`).                                                  |
 
 ## Branching Strategy
@@ -346,14 +353,17 @@ used here.
 
 ## License
 
-Licensed under the [Apache License, Version 2.0](LICENSE) — the same license
-declared in the generated POM's `<licenses>` block.
+Licensed under the [MIT License](LICENSE) — the same license declared in the
+generated POM's `<licenses>` block. Build scripts carry an
+`SPDX-License-Identifier: MIT` header.
 
 [`LICENSE`](LICENSE) opens with an **AI-generated content notice** before the
-Apache text: this project's code and documentation were produced predominantly
+MIT text: this project's code and documentation were produced predominantly
 by an AI LLM, reviewed and refined by the project lead. Output may contain
-inaccuracies or errors, and the AI-generated portions are treated as public
-domain, with copyright limited to the human contributions.
+inaccuracies or errors, and copyright claims are limited to the original human
+contributions, modifications, arrangement, and selection. The same notices are
+reproduced in [`DISCLAIMER.md`](DISCLAIMER.md); where the two differ, LICENSE
+governs.
 
 ---
 Author: [Rubens Gomes](https://rubensgomes.com/)
