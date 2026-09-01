@@ -51,13 +51,13 @@ and (optionally) remove system Gradle.
 ## 3. Publish to GitHub
 
 ```shell
-# GITIGNORE see https://github.com/github/gitignore
-# Gradle.gitignore
-# Java.gitignore
-# Kotlin.gitignore
-# Maven.gitignore
-# Python.gitignore
-# Terraform.gitignore
+# GITIGNORE Templates: (see https://github.com/github/gitignore)
+# Gradle
+# Java
+# Kotlin
+# Maven
+# Python
+# Terraform
 GITIGNORE="<>" 
 DESCRIPTION="<some description>"
 ORG="<some organization>" # e.g., rubensgomes-org, 3cloud-sandbox
@@ -76,8 +76,8 @@ gh repo create "${ORG}/${PROJ_NAME}" \
   --license "MIT" \
   --private
 
-gh repo edit myorg/rg-azure-resource-naming \
-  --description "${DESCRIPTION}" \
+# add tags to the project
+gh repo edit "${ORG}/${PROJ_NAME}" \
   --add-topic personal \
   --add-topic rubens-gomes \
   --add-topic azure \
