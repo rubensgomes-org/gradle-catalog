@@ -51,11 +51,40 @@ and (optionally) remove system Gradle.
 ## 3. Publish to GitHub
 
 ```shell
+# GITIGNORE see https://github.com/github/gitignore
+# Gradle.gitignore
+# Java.gitignore
+# Kotlin.gitignore
+# Maven.gitignore
+# Python.gitignore
+# Terraform.gitignore
+GITIGNORE="<>" 
+DESCRIPTION="<some description>"
+ORG="<some organization>" # e.g., rubensgomes-org, 3cloud-sandbox
+PROJ_NAME="<add-proj-name>"  # e.g., gradle-catalog
+URL="https://github.com/${ORG}" # e.g., https://github.com/rubensgomes-org
+
 git init -b main
 git add .
 git commit -m "initial commit"
-gh repo create "rubensgomes-org/$PROJ_NAME" --homepage "https://github.com/rubensgomes-org" --public
-git remote add origin "https://github.com/rubensgomes-org/$PROJ_NAME"
+
+# create a remote GitHub repository
+gh repo create "${ORG}/${PROJ_NAME}" \
+  --description "${DESCRIPTION}" \
+  --gitignore "${GITIGNORE}" \
+  --homepage "${REPO_URL}" \
+  --license "MIT" \
+  --private
+
+gh repo edit myorg/rg-azure-resource-naming \
+  --description "${DESCRIPTION}" \
+  --add-topic personal \
+  --add-topic rubens-gomes \
+  --add-topic azure \
+  --add-topic github-actions \
+  --add-topic terraform 
+
+git remote add origin "${URL}/$PROJ_NAME"
 git push -u origin main
 ```
 
