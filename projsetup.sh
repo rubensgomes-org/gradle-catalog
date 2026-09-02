@@ -323,7 +323,8 @@ EOF
 #####################################################################
 # Creates the project: initializes a local git repository, commits
 # the working tree, creates the matching private GitHub repository,
-# adds every topic held in TAGS, then pushes branch main to it.
+# adds every topic held in TAGS, rebases the local history onto the
+# commit GitHub created, then pushes branch main to it.
 #
 # Each step is checked, and the first failure ends the function so
 # that no later step runs against a half created project.
@@ -394,6 +395,22 @@ function create_proj() {
   if ! git remote add origin "${url}/${NAME}"; then
     printf 'ERROR: failed to add the origin remote: %s/%s\n' \
       "${url}" "${NAME}" >&2
+    return 1
+  fi
+
+  # --gitignore and --license make GitHub initialize the repository with
+  # a commit of its own, so the local history has to be replayed on top
+  # of it before main can be pushed.
+  log_verbose "fetching the remote initial commit"
+  if ! git fetch origin; then
+    printf 'ERROR: failed to fetch from the origin remote: %s/%s\n' \
+      "${url}" "${NAME}" >&2
+    return 1
+  fi
+
+  log_verbose "rebasing branch main onto origin/main"
+  if ! git rebase origin/main; then
+    printf 'ERROR: failed to rebase branch main onto: origin/main\n' >&2
     return 1
   fi
 

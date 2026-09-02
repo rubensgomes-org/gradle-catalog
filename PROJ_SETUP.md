@@ -136,7 +136,10 @@ success:
 1. `git init -b main`, `git add .`, `git commit -m "initial commit" -a`
 2. `gh repo create` — private, MIT licensed, homepage `https://${GH_HOST}/${ORG}`
 3. `gh repo edit` — one `--add-topic` per entry in `--tags`
-4. `git remote add origin`, `git push -u origin main`
+4. `git remote add origin`, `git fetch origin`, `git rebase origin/main`,
+   `git push -u origin main` — the rebase is required because
+   `--gitignore`/`--license` make GitHub initialize the repository with a
+   commit of its own
 
 Note that the repository is created **private**. See section 4 on why
 that affects which Actions secrets it inherits.
@@ -172,6 +175,11 @@ gh repo edit "${ORG}/${PROJ_NAME}" \
   --add-topic azure
 
 git remote add origin "${URL}/${PROJ_NAME}"
+
+# --gitignore and --license leave an initial commit on the remote, so the
+# local history is replayed on top of it before main is pushed
+git fetch origin
+git rebase origin/main
 git push -u origin main
 ```
 
