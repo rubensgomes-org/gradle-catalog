@@ -6,6 +6,32 @@ something the next phase consumes.
 
 ## 1. Install prerequisites
 
+`projsetup.sh` automates section 3, and it checks its own prerequisites
+before doing anything. Everything below is one of those checks.
+
+### Bash 4 or greater
+
+The script uses associative arrays, a bash 4 feature. macOS ships bash
+3.2 at `/bin/bash` and never updates it, so install a current bash and
+keep it ahead of `/bin/bash` on `PATH`:
+
+```shell
+brew install bash          # macOS; Linux and WSL already ship bash 5
+bash --version | head -1   # must report 4.x or later
+```
+
+The shebang is `#!/usr/bin/env bash`, so the script uses whichever bash
+`PATH` finds first. Invoking it as `/bin/bash projsetup.sh` on macOS
+fails with `ERROR: bash 4 or greater required`.
+
+### Git and the GitHub CLI
+
+Both must be on `PATH`; the script refuses to run without either.
+
+```shell
+brew install git gh
+```
+
 ### Java + Gradle (cross-platform, via SDKMAN)
 
 ```shell
@@ -34,6 +60,30 @@ sudo ln -sfn "$(brew --prefix openjdk)/libexec/openjdk.jdk" \
   GitHub Packages Maven registry, and fail with `401 Unauthorized` on
   upload no matter how their permissions are set.
 
+### Environment variables
+
+`projsetup.sh` requires all eight of these to be defined and non-empty,
+and stops with `ERROR: undefined environment variable(s): ...` naming any
+that are missing. It never prints their values.
+
+```shell
+export GH_HOST="github.com"
+export GH_TOKEN="<classic-pat>"
+export GITHUB_TOKEN="${GH_TOKEN}"
+export GITHUB_USER="<github-username>"
+export GIT_AUTHOR_EMAIL="<you@example.com>"
+export GIT_AUTHOR_NAME="<Your Name>"
+export GIT_COMMITTER_EMAIL="${GIT_AUTHOR_EMAIL}"
+export GIT_EDITOR="vi"
+```
+
+`GH_HOST` also determines the URLs the script builds: the repository
+homepage becomes `https://${GH_HOST}/${ORG}` and the git remote becomes
+`https://${GH_HOST}/${ORG}/${NAME}`.
+
+Keep the two token lines in a file outside any repository and source it
+from your shell profile, so a PAT is never committed.
+
 ## 2. Create the local Gradle project
 
 ```shell
@@ -50,41 +100,78 @@ and (optionally) remove system Gradle.
 
 ## 3. Publish to GitHub
 
+`projsetup.sh` performs this entire phase. Run it from inside the project
+directory created in section 2:
+
 ```shell
-# GITIGNORE Templates: (see https://github.com/github/gitignore)
-# Gradle
-# Java
-# Kotlin
-# Maven
-# Python
-# Terraform
-GITIGNORE="<>" 
+./projsetup.sh \
+  --description "<some description>" \
+  --gitignore Java \
+  --name "<add-proj-name>" \
+  --org "<some organization>" \
+  --tags personal,rubens-gomes,azure
+```
+
+| Option | Argument | Notes |
+| --- | --- | --- |
+| `-d`, `--description` | `DESCRIPTION` | Project description |
+| `-g`, `--gitignore` | `GITIGNORE` | Template name, see below |
+| `-n`, `--name` | `NAME` | Project name, e.g. `gradle-catalog` |
+| `-o`, `--org` | `ORG` | e.g. `rubensgomes-org`, `3cloud-sandbox` |
+| `-t`, `--tags` | `TAGS` | Comma separated GitHub topics |
+| `-v`, `--verbose` | — | Trace every step on stderr |
+| `-h`, `--help` | — | Print the usage text and exit 0 |
+
+Every option except `-v` and `-h` is required; omitting one lists what is
+missing and prints the usage. `--tags` may also be repeated
+(`-t personal -t azure`) and both forms accumulate.
+
+Gitignore templates (see [github/gitignore](https://github.com/github/gitignore)):
+`Gradle`, `Java`, `Kotlin`, `Maven`, `Python`, `Terraform`.
+
+The script runs these steps in order, stops at the first failure with an
+`ERROR:` line on stderr and a non-zero exit, and prints `Done.` on
+success:
+
+1. `git init -b main`, `git add .`, `git commit -m "initial commit" -a`
+2. `gh repo create` — private, MIT licensed, homepage `https://${GH_HOST}/${ORG}`
+3. `gh repo edit` — one `--add-topic` per entry in `--tags`
+4. `git remote add origin`, `git push -u origin main`
+
+Note that the repository is created **private**. See section 4 on why
+that affects which Actions secrets it inherits.
+
+### Fallback: the equivalent manual commands
+
+Only if the script cannot run. These are what it executes; keep them in
+sync with `projsetup.sh`, which is the source of truth.
+
+```shell
+GITIGNORE="<gitignore-template>"
 DESCRIPTION="<some description>"
-ORG="<some organization>" # e.g., rubensgomes-org, 3cloud-sandbox
-PROJ_NAME="<add-proj-name>"  # e.g., gradle-catalog
-URL="https://github.com/${ORG}" # e.g., https://github.com/rubensgomes-org
+ORG="<some organization>"
+PROJ_NAME="<add-proj-name>"
+URL="https://github.com/${ORG}"
 
 git init -b main
 git add .
-git commit -m "initial commit"
+git commit -m "initial commit" -a
 
 # create a remote GitHub repository
 gh repo create "${ORG}/${PROJ_NAME}" \
   --description "${DESCRIPTION}" \
   --gitignore "${GITIGNORE}" \
-  --homepage "${REPO_URL}" \
+  --homepage "${URL}" \
   --license "MIT" \
   --private
 
-# add tags to the project
+# add topics to the project
 gh repo edit "${ORG}/${PROJ_NAME}" \
   --add-topic personal \
   --add-topic rubens-gomes \
-  --add-topic azure \
-  --add-topic github-actions \
-  --add-topic terraform 
+  --add-topic azure
 
-git remote add origin "${URL}/$PROJ_NAME"
+git remote add origin "${URL}/${PROJ_NAME}"
 git push -u origin main
 ```
 
